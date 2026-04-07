@@ -3,11 +3,21 @@ import { uploadFile, fetchRegistry, getExpenses } from '../../api/client';
 import { useAppStore } from '../../store/appStore';
 import './UploadStep.css';
 
-/** Extract a Tricount registry ID from a full URL or return the raw value. */
+/** Extract a Tricount registry ID from any URL format or return the raw value.
+ *  Handles:
+ *   - https://tricount.com/en/registry/ABC123  → ABC123
+ *   - https://tricount.com/tCiXdLxCqupzZeeKwJ  → tCiXdLxCqupzZeeKwJ
+ *   - ABC123  → ABC123
+ */
 function parseRegistryInput(input: string): string {
   const clean = input.trim();
-  const match = clean.match(/registry\/([A-Za-z0-9_-]+)/);
-  if (match) return match[1];
+  // Named registry path
+  const registryMatch = clean.match(/registry\/([A-Za-z0-9_-]+)/);
+  if (registryMatch) return registryMatch[1];
+  // Short-link: tricount.com/<code>  (last path segment, no slashes after)
+  const shortMatch = clean.match(/tricount\.com\/([A-Za-z0-9_-]+)\/?$/);
+  if (shortMatch) return shortMatch[1];
+  // Bare code or anything else
   return clean;
 }
 

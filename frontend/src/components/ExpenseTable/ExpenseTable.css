@@ -55,6 +55,7 @@
   font-size: 12px;
   height: 36px;
   background: var(--white);
+  color: var(--black);
   flex: 1;
   min-width: 120px;
   border-radius: 0;
@@ -63,6 +64,7 @@
 .et-filter-input:focus, .et-filter-select:focus {
   outline: none;
   background: var(--gray-100);
+  color: var(--black);
 }
 
 .et-count {
@@ -100,7 +102,7 @@
 
 .et-table tbody tr { border-bottom: var(--border-light); }
 .et-table tbody tr:hover { background: var(--gray-100); }
-.et-table tbody tr.row-uncat { background: #fafafa; }
+.et-table tbody tr.row-uncat { background: var(--gray-100); }
 
 .et-table td { padding: 7px 12px; }
 
@@ -114,6 +116,8 @@
   font-size: 12px;
   height: auto;
   border: var(--border);
+  background: var(--white);
+  color: var(--black);
 }
 
 .td-cat .select-uncat {
