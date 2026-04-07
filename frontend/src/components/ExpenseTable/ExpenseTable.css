@@ -54,7 +54,7 @@
   padding: 8px 12px;
   font-size: 12px;
   height: 36px;
-  background: var(--white);
+  background-color: var(--white);
   color: var(--black);
   flex: 1;
   min-width: 120px;
@@ -63,7 +63,7 @@
 
 .et-filter-input:focus, .et-filter-select:focus {
   outline: none;
-  background: var(--gray-100);
+  background-color: var(--gray-100);
   color: var(--black);
 }
 
@@ -116,7 +116,7 @@
   font-size: 12px;
   height: auto;
   border: var(--border);
-  background: var(--white);
+  background-color: var(--white);
   color: var(--black);
 }
 

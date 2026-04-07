@@ -99,7 +99,7 @@ input[type="email"],
 select,
 textarea {
   border: var(--border);
-  background: var(--white);
+  background-color: var(--white);
   color: var(--black);
   padding: 8px 10px;
   font-family: var(--font);
