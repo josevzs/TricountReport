@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
-import { getSettings, saveSettings } from '../../api/client';
+import { useState, useRef } from 'react';
+import { saveSettings } from '../../api/client';
 import { useAppStore } from '../../store/appStore';
 import type { ProviderSettings, AIProvider } from '../../types';
 import './SettingsPanel.css';
@@ -10,13 +10,11 @@ export default function SettingsPanel() {
   const { settings, setSettings } = useAppStore();
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  useEffect(() => {
-    getSettings().then(setSettings).catch(() => {});
-  }, []);
-
+  // Settings are persisted in localStorage by the zustand store.
+  // We still write to the backend so it has keys for AI calls.
   function handleChange(patch: Partial<ProviderSettings>) {
     const next = { ...settings, ...patch };
-    setSettings(next);
+    setSettings(next);  // immediately saved to localStorage via zustand persist
     if (saveTimer.current) clearTimeout(saveTimer.current);
     saveTimer.current = setTimeout(async () => {
       setSaving(true);

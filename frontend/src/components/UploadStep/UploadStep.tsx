@@ -1,12 +1,11 @@
 import { useRef, useState } from 'react';
-import { uploadFile, fetchRegistry, getExpenses, getSettings } from '../../api/client';
+import { uploadFile, fetchRegistry, getExpenses } from '../../api/client';
 import { useAppStore } from '../../store/appStore';
 import './UploadStep.css';
 
 /** Extract a Tricount registry ID from a full URL or return the raw value. */
 function parseRegistryInput(input: string): string {
   const clean = input.trim();
-  // Match: tricount.com/.../registry/<ID>  or  tricount.com/registry/<ID>
   const match = clean.match(/registry\/([A-Za-z0-9_-]+)/);
   if (match) return match[1];
   return clean;
@@ -14,12 +13,14 @@ function parseRegistryInput(input: string): string {
 
 export default function UploadStep() {
   const [tab, setTab] = useState<'file' | 'fetch'>('file');
-  const [registryInput, setRegistryInput] = useState('');
   const [dragging, setDragging] = useState(false);
   const [loading, setLoading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const { setSessionId, setUploadSummary, setData, setSettings, setStep, setError } = useAppStore();
+  const {
+    lastRegistryInput, setLastRegistryInput,
+    setSessionId, setUploadSummary, setData, setStep, setError,
+  } = useAppStore();
 
   async function handleLoad(file: File) {
     setLoading(true);
@@ -27,11 +28,9 @@ export default function UploadStep() {
     try {
       const summary = await uploadFile(file);
       const data    = await getExpenses(summary.session_id);
-      const settings = await getSettings();
       setSessionId(summary.session_id);
       setUploadSummary(summary);
       setData(data);
-      setSettings(settings);
       setStep('categorize');
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Upload failed');
@@ -41,18 +40,16 @@ export default function UploadStep() {
   }
 
   async function handleFetch() {
-    const id = parseRegistryInput(registryInput);
+    const id = parseRegistryInput(lastRegistryInput);
     if (!id) return;
     setLoading(true);
     setError(null);
     try {
-      const summary  = await fetchRegistry(id);
-      const data     = await getExpenses(summary.session_id);
-      const settings = await getSettings();
+      const summary = await fetchRegistry(id);
+      const data    = await getExpenses(summary.session_id);
       setSessionId(summary.session_id);
       setUploadSummary(summary);
       setData(data);
-      setSettings(settings);
       setStep('categorize');
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Failed to fetch from Tricount');
@@ -104,15 +101,15 @@ export default function UploadStep() {
             <input
               type="text"
               placeholder="https://tricount.com/en/registry/ABC123  or just  ABC123"
-              value={registryInput}
-              onChange={e => setRegistryInput(e.target.value)}
+              value={lastRegistryInput}
+              onChange={e => setLastRegistryInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleFetch()}
             />
             <p className="field-hint">
-              Accepts full Tricount share links or bare registry IDs
+              Accepts full Tricount share links or bare registry IDs. Last value is remembered.
             </p>
           </div>
-          <button className="btn btn-fill" onClick={handleFetch} disabled={!registryInput.trim() || loading}>
+          <button className="btn btn-fill" onClick={handleFetch} disabled={!lastRegistryInput.trim() || loading}>
             {loading ? <span className="spinner spinner-white" /> : null}
             {loading ? 'Fetching…' : 'Fetch Data →'}
           </button>
