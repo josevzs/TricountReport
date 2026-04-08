@@ -23,8 +23,7 @@ export default function SettingsPanel() {
   return (
     <div className="settings-wrapper">
       <button className="settings-toggle" onClick={() => setOpen(o => !o)}>
-        {saving ? <span className="spinner" /> : '⚙'}
-        Settings
+        {saving ? <span className="spinner" /> : '⚙'}{' '}Settings
       </button>
 
       {open && (

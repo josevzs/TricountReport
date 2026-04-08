@@ -5,7 +5,8 @@
 
 .upload-tagline {
   font-size: 13px;
-  color: var(--gray-600);
+  font-weight: 700;
+  color: var(--black);
   letter-spacing: 0.01em;
   line-height: 1.5;
   margin-bottom: 18px;
