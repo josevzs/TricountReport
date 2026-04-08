@@ -1,6 +1,6 @@
 import json
 import logging
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import StreamingResponse
 
 logger = logging.getLogger("tricountreport.categorize")
@@ -12,12 +12,14 @@ from backend.models import (
 from backend.config import load_settings
 from backend.services.categorizer import categorize_expenses, categorize_expenses_streaming, suggest_categories_for_trip
 from backend.storage import session_store
+from backend.main import limiter
 
 router = APIRouter()
 
 
 @router.post("/categorize", response_model=CategorizationResponse)
-async def run_categorization(body: CategorizationRequest):
+@limiter.limit("5/minute")
+async def run_categorization(request: Request, body: CategorizationRequest):
     data = session_store.get_session(body.session_id)
     if data is None:
         raise HTTPException(status_code=404, detail="Session not found")
@@ -26,9 +28,9 @@ async def run_categorization(body: CategorizationRequest):
     logger.info("Categorizing %d expenses via %s", len(data.expenses), settings.provider)
     try:
         result = await categorize_expenses(data, settings, body.entry_ids)
-    except Exception as e:
+    except Exception:
         logger.exception("AI categorization failed")
-        raise HTTPException(status_code=500, detail=f"AI categorization failed: {e}")
+        raise HTTPException(status_code=500, detail="AI categorization failed. Check provider settings and try again.")
 
     for cat in result.new_categories_proposed:
         session_store.add_custom_category(body.session_id, cat)
@@ -37,7 +39,8 @@ async def run_categorization(body: CategorizationRequest):
 
 
 @router.post("/categorize/stream")
-async def stream_categorization(body: CategorizationRequest):
+@limiter.limit("5/minute")
+async def stream_categorization(request: Request, body: CategorizationRequest):
     """SSE endpoint — streams progress events as AI processes expense chunks."""
     data = session_store.get_session(body.session_id)
     if data is None:
@@ -49,15 +52,13 @@ async def stream_categorization(body: CategorizationRequest):
         try:
             async for event in categorize_expenses_streaming(data, settings, body.entry_ids):
                 yield f"data: {json.dumps(event)}\n\n"
-                # Store new categories as they come in
                 if event.get("type") == "result":
                     for cat in event.get("new_categories", []):
                         session_store.add_custom_category(body.session_id, cat)
-        except Exception as e:
+        except Exception:
             logger.exception("SSE categorization error")
-            yield f"data: {json.dumps({'type': 'error', 'message': str(e)})}\n\n"
+            yield f"data: {json.dumps({'type': 'error', 'message': 'Categorization failed. Check provider settings.'})}\n\n"
         finally:
-            # Ensure the stream is properly terminated even if the client is buffering
             yield f"data: {json.dumps({'type': 'done'})}\n\n"
 
     return StreamingResponse(
@@ -87,7 +88,8 @@ async def apply_categorizations(body: ApplyCategorizationRequest):
 
 
 @router.post("/categories/suggest")
-async def suggest_categories(body: CategorizationRequest):
+@limiter.limit("10/minute")
+async def suggest_categories(request: Request, body: CategorizationRequest):
     """Ask AI to suggest which categories are relevant for this trip's expenses."""
     data = session_store.get_session(body.session_id)
     if data is None:
@@ -96,8 +98,7 @@ async def suggest_categories(body: CategorizationRequest):
     settings = load_settings()
     try:
         suggested = await suggest_categories_for_trip(data, settings)
-    except Exception as e:
-        # Fallback: return presets
+    except Exception:
         suggested = PRESET_CATEGORIES
 
     return {"categories": suggested}

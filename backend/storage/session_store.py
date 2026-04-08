@@ -16,7 +16,7 @@ logger = logging.getLogger("tricountreport.sessions")
 _store: dict[str, ParsedData] = {}
 _timestamps: dict[str, float] = {}  # session_id -> creation time (epoch)
 
-SESSION_TTL_HOURS = 48
+SESSION_TTL_HOURS = 6
 _SESSION_TTL_SECONDS = SESSION_TTL_HOURS * 3600
 
 _SESSIONS_DIR = Path(__file__).parent.parent.parent / ".sessions"
@@ -47,9 +47,12 @@ def _is_expired(session_id: str) -> bool:
 def _save(session_id: str, data: ParsedData) -> None:
     try:
         _SESSIONS_DIR.mkdir(exist_ok=True)
-        _session_path(session_id).write_text(
-            data.model_dump_json(), encoding="utf-8"
-        )
+        path = _session_path(session_id)
+        path.write_text(data.model_dump_json(), encoding="utf-8")
+        try:
+            path.chmod(0o600)  # owner read/write only — no world-readable session data
+        except Exception:
+            pass
     except Exception:
         logger.warning("Could not persist session %s to disk", session_id)
 

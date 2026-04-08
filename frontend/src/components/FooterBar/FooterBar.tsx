@@ -195,6 +195,19 @@ function LegalPage() {
         decisions.
       </p>
 
+      <h4>Analytics</h4>
+      <p>
+        When deployed publicly, this site may use{' '}
+        <a href="https://plausible.io" target="_blank" rel="noreferrer">Plausible Analytics</a>
+        {' '}— a privacy-first, cookie-free analytics tool. Plausible does not collect personal
+        data, does not use cookies, and is fully GDPR-compliant. No consent banner is required.
+        The data collected is limited to: page views, referrer source, country, device type,
+        and browser. Your IP address is never stored.
+      </p>
+      <p>
+        If you are running this tool locally, no analytics are active.
+      </p>
+
       <h4>Affiliate &amp; referral links</h4>
       <p>
         This site contains one referral link to N26 (a banking product). If you open an

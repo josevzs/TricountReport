@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#000"/>
+
+  <!-- Top accent line -->
+  <rect x="80" y="80" width="120" height="4" fill="#fff"/>
+
+  <!-- App name -->
+  <text
+    x="80" y="320"
+    font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+    font-size="128"
+    font-weight="900"
+    letter-spacing="-2"
+    fill="#fff"
+  >tric-yreports</text>
+
+  <!-- Tagline -->
+  <text
+    x="80" y="390"
+    font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+    font-size="28"
+    font-weight="400"
+    letter-spacing="1"
+    fill="#999"
+  >Turn your Tricount export into a clean expense report</text>
+
+  <text
+    x="80" y="428"
+    font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+    font-size="28"
+    font-weight="400"
+    letter-spacing="1"
+    fill="#999"
+  >AI-categorized · PDF-ready · Free &amp; open source</text>
+
+  <!-- Bottom rule -->
+  <rect x="80" y="530" width="1040" height="1" fill="#333"/>
+
+  <!-- URL placeholder -->
+  <text
+    x="80" y="568"
+    font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+    font-size="20"
+    font-weight="400"
+    letter-spacing="2"
+    fill="#555"
+  >YOURDOMAIN.COM</text>
+</svg>

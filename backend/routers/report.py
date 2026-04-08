@@ -1,7 +1,16 @@
 import base64
+import logging
 import re
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import Response
+
+from backend.models import ReportRequest, ReportResponse
+from backend.services.report_generator import generate_markdown, generate_pdf
+from backend.storage import session_store
+from backend.main import limiter
+
+logger = logging.getLogger("tricountreport.report")
+router = APIRouter()
 
 
 def _safe_filename(name: str) -> str:
@@ -10,18 +19,16 @@ def _safe_filename(name: str) -> str:
     name = re.sub(r'[<>:"|?*]', "_", name)
     return name.strip()[:100] or "Trip_Report"
 
-from backend.models import ReportRequest, ReportResponse
-from backend.services.report_generator import generate_markdown, generate_pdf
-from backend.storage import session_store
-
-router = APIRouter()
-
 
 @router.post("/report", response_model=ReportResponse)
-async def generate_report(body: ReportRequest):
+@limiter.limit("10/minute")
+async def generate_report(request: Request, body: ReportRequest):
     data = session_store.get_session(body.session_id)
     if data is None:
         raise HTTPException(status_code=404, detail="Session not found")
+
+    # Sanitize trip_name before passing to generators
+    safe_trip_name = _safe_filename(body.trip_name)
 
     kwargs = dict(
         report_mode=body.report_mode,
@@ -33,16 +40,18 @@ async def generate_report(body: ReportRequest):
 
     if "markdown" in body.formats:
         try:
-            result.markdown = generate_markdown(data, body.trip_name, **kwargs)
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Markdown generation failed: {e}")
+            result.markdown = generate_markdown(data, safe_trip_name, **kwargs)
+        except Exception:
+            logger.exception("Markdown generation failed")
+            raise HTTPException(status_code=500, detail="Report generation failed. Please try again.")
 
     if "pdf" in body.formats:
         try:
-            pdf_bytes = generate_pdf(data, body.trip_name, **kwargs)
+            pdf_bytes = generate_pdf(data, safe_trip_name, **kwargs)
             result.pdf_base64 = base64.b64encode(pdf_bytes).decode("utf-8")
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=f"PDF generation failed: {e}")
+        except Exception:
+            logger.exception("PDF generation failed")
+            raise HTTPException(status_code=500, detail="PDF generation failed. Please try again.")
 
     return result
 
@@ -65,14 +74,14 @@ async def download_report(
 
     safe_name = _safe_filename(trip_name)
     if format == "md":
-        content = generate_markdown(data, trip_name, **kwargs)
+        content = generate_markdown(data, safe_name, **kwargs)
         return Response(
             content=content.encode("utf-8"),
             media_type="text/markdown",
             headers={"Content-Disposition": f'attachment; filename="{safe_name}.md"'},
         )
     elif format == "pdf":
-        pdf_bytes = generate_pdf(data, trip_name, **kwargs)
+        pdf_bytes = generate_pdf(data, safe_name, **kwargs)
         return Response(
             content=pdf_bytes,
             media_type="application/pdf",

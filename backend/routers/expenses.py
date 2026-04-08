@@ -18,7 +18,7 @@ async def get_expenses(session_id: str):
 async def patch_expense(session_id: str, entry_id: int, body: PatchExpenseRequest):
     # Basic category validation
     cat = body.category.strip()
-    if not cat:
+    if not cat or not cat.strip():
         raise HTTPException(status_code=400, detail="Category must not be empty")
     if len(cat) > 100:
         raise HTTPException(status_code=400, detail="Category name too long (max 100 characters)")
