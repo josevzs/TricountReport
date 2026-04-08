@@ -198,7 +198,7 @@ function LegalPage() {
       <h4>Open source</h4>
       <p>
         Source code is available on{' '}
-        <a href="https://github.com/josevzs/TricountReport" target="_blank" rel="noreferrer">
+        <a href="https://github.com/josevzs/tric-yreports" target="_blank" rel="noreferrer">
           GitHub
         </a>
         . MIT licence.
@@ -219,9 +219,13 @@ export default function FooterBar() {
           How to use
         </button>
 
+        <button className="fb-link" onClick={() => setOverlay('legal')}>
+          Legal &amp; Privacy
+        </button>
+
         <a
           className="fb-link fb-icon-link"
-          href="https://github.com/josevzs/TricountReport"
+          href="https://github.com/josevzs/tric-yreports"
           target="_blank"
           rel="noreferrer"
           title="Source code on GitHub"
@@ -229,10 +233,6 @@ export default function FooterBar() {
           <GitHubIcon />
           <span>GitHub</span>
         </a>
-
-        <button className="fb-link" onClick={() => setOverlay('legal')}>
-          Legal &amp; Privacy
-        </button>
 
         <a
           className="fb-link fb-icon-link fb-kofi"
@@ -246,20 +246,20 @@ export default function FooterBar() {
           <span className="fb-kofi-aside">(the one expense the AI always gets right)</span>
         </a>
 
-        {/* N26 referral — update the href with your actual referral link */}
         <a
           className="fb-link fb-icon-link fb-n26"
-          href="https://n26.com/r/josev8088"
+          href="https://n26.com/r/josev1686?cid=CTK&lang=en"
           target="_blank"
           rel="noreferrer"
         >
           <N26Icon />
           <span>N26 — real rates, free cash worldwide</span>
           <span className="fb-n26-tooltip">
-            N26 uses the official Mastercard exchange rate with no markups —
-            ideal for trips like the ones you're reporting here.
-            Free ATM withdrawals almost anywhere in the world.
-            Open an account with this link and we both get a bonus.
+            <strong>Stop losing money on currency exchange.</strong><br />
+            N26 uses the official Mastercard rate — no markup, no surprises.
+            Withdraw cash for free almost anywhere in the world.<br /><br />
+            Perfect for trips like the ones you're reporting here.
+            Open an account with this link and we both get a small bonus.
           </span>
         </a>
       </footer>

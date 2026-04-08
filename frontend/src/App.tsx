@@ -45,7 +45,7 @@ export default function App() {
     <div className="app">
       <header className="app-header">
         <div className="header-brand">
-          <h1>TricountReport</h1>
+          <h1>tric-yreports</h1>
           {uploadSummary && (
             <span className="session-info">
               {uploadSummary.expense_count} exp · {uploadSummary.total_amount.toLocaleString('es-ES', { minimumFractionDigits: 2 })} {uploadSummary.currency}

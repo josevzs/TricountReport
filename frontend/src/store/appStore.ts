@@ -178,7 +178,7 @@ export const useAppStore = create<AppState>()(
       }),
     }),
     {
-      name: 'tricountreport',
+      name: 'tric-yreports',
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
         // Provider settings + cached inputs

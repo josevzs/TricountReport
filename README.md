@@ -1,6 +1,6 @@
-# TricountReport
+# tric-yreports
 
-A webapp for generating expense reports from Tricount data, with AI-powered auto-categorization.
+Turn your Tricount export into a clean expense report — AI-categorized, PDF-ready.
 
 ## Features
 
