@@ -14,7 +14,6 @@
   align-items: center;
   gap: 16px;
   padding: 0 24px;
-  border-right: var(--border);
 }
 
 .header-brand h1 {

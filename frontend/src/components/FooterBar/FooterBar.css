@@ -70,6 +70,7 @@
   text-transform: none;
   letter-spacing: 0;
   line-height: 1.6;
+  white-space: normal;
   border: 1px solid #555;
   pointer-events: none;
   z-index: 200;
