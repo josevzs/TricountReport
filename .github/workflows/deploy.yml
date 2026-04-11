@@ -1,0 +1,28 @@
+name: Deploy to production
+
+on:
+  push:
+    branches:
+      - production
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: 204.168.255.227
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            set -e
+            cd /opt/easyexpense
+            git pull origin production
+            .venv/bin/pip install -r backend/requirements.txt -q
+            cd frontend
+            npm install --silent
+            npm run build
+            cd ..
+            systemctl restart easyexpense
+            echo "Deploy complete: $(date)"
