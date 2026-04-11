@@ -4,16 +4,17 @@
   align-items: center;
   gap: 0;
   border-top: var(--border);
-  height: 30px;
+  min-height: 30px;
   padding: 0 8px;
   background: var(--white);
   flex-shrink: 0;
   overflow: visible;
   justify-content: space-between;
+  flex-wrap: wrap;
 }
 
-.fb-left { display: flex; align-items: center; height: 100%; }
-.fb-right { display: flex; align-items: center; height: 100%; margin-left: auto; }
+.fb-left { display: flex; align-items: center; height: 30px; }
+.fb-right { display: flex; align-items: center; height: 30px; margin-left: auto; }
 
 .fb-link {
   display: inline-flex;
@@ -239,4 +240,38 @@
   .fb-overlay-panel { padding: 28px 20px 28px; }
   .fb-kofi-aside { display: none; }
   .fb-n26-tooltip { width: 200px; }
+}
+
+/* Mobile footer: stack into two rows */
+@media (max-width: 700px) {
+  .footer-bar {
+    padding: 0;
+  }
+
+  .fb-left,
+  .fb-right {
+    width: 100%;
+    margin-left: 0;
+    height: 30px;
+    border-bottom: var(--border-light);
+  }
+
+  .fb-right {
+    border-bottom: none;
+  }
+
+  /* Make all links fill height and split space evenly within their row */
+  .fb-left .fb-link,
+  .fb-right .fb-link {
+    flex: 1;
+    justify-content: center;
+    padding: 0 6px;
+  }
+
+  /* Remove right border from last item in left row — row ends with border-bottom instead */
+  .fb-left .fb-link:last-child { border-right: var(--border-light); }
+
+  /* N26 label: hide long text, show short version */
+  .fb-n26-long { display: none; }
+  .fb-n26-short { display: inline !important; }
 }

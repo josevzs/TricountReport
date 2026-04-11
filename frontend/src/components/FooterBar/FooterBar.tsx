@@ -299,7 +299,8 @@ export default function FooterBar() {
           rel="noreferrer"
         >
           <N26Icon />
-          <span>N26 — real rates, free cash worldwide</span>
+          <span className="fb-n26-long">N26 — real rates, free cash worldwide</span>
+          <span className="fb-n26-short" style={{ display: 'none' }}>N26</span>
           <span className="fb-n26-tooltip">
             <strong>Stop losing money on currency exchange.</strong><br />
             N26 uses the official Mastercard rate — no markup, no surprises.
